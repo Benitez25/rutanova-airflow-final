@@ -419,3 +419,10 @@ Este proyecto está preparado para una demostración local. Una implementación 
 - [dbt: variables de entorno](https://docs.getdbt.com/reference/dbt-jinja-functions/env_var)
 - [Snowflake: autenticación con claves](https://docs.snowflake.com/en/user-guide/key-pair-auth)
 - [Snowflake: conector de Python](https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect)
+
+
+## Enlaces de entrega
+
+- [Repositorio del proyecto](https://github.com/Benitez25/rutanova-airflow-final)
+- [Video de presentación](https://drive.google.com/file/d/1zAJT2x7HVeCSNIQEwolaONVoz4m6-s2G/view?usp=sharing)
+- [PDF de arquitectura](docs/Arquitectura_RutaNova.pdf)
