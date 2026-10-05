@@ -1,0 +1,128 @@
+x-airflow: &airflow
+  build: .
+  image: rutanova-airflow:local
+  user: "${AIRFLOW_UID:-50000}:0"
+  env_file: .env
+  environment: &airflow-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "postgresql+psycopg2://airflow:${POSTGRES_PASSWORD:?Run configure.py}@postgres/airflow"
+    AIRFLOW__CORE__FERNET_KEY: "${AIRFLOW_FERNET_KEY}"
+    AIRFLOW__WEBSERVER__SECRET_KEY: "${AIRFLOW_WEBSERVER_SECRET_KEY}"
+    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "false"
+    AIRFLOW__WEBSERVER__WARN_DEPLOYMENT_EXPOSURE: "false"
+    AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "true"
+    PYTHONPATH: /opt/airflow
+  volumes:
+    - ./inbox:/opt/airflow/inbox:ro
+    - ./secrets:/opt/airflow/secrets:ro
+    - airflow-logs:/opt/airflow/logs
+    - dbt-target:/opt/airflow/dbt/target
+    - dbt-logs:/opt/airflow/dbt/logs
+    - ./reports:/opt/airflow/reports
+
+services:
+  keygen:
+    build: .
+    image: rutanova-airflow:local
+    user: "${AIRFLOW_UID:-50000}:0"
+    profiles: [tools]
+    command: ["python", "/opt/airflow/scripts/generate_key.py"]
+    volumes: ["./secrets:/opt/airflow/secrets"]
+
+  postgres:
+    image: postgres:16.8-alpine
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: airflow
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
+    command: server /data --console-address ':9001'
+    environment:
+      MINIO_ROOT_USER: "${MINIO_ROOT_USER}"
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
+    ports: ["127.0.0.1:9001:9001"]
+    volumes: ["minio-data:/data"]
+
+  minio-init:
+    image: clickhouse/minio-mc:RELEASE.2025-04-16T18-13-26Z
+    depends_on: [minio]
+    environment:
+      MINIO_ROOT_USER: "${MINIO_ROOT_USER}"
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
+      MINIO_ACCESS_KEY: "${MINIO_ACCESS_KEY}"
+      MINIO_SECRET_KEY: "${MINIO_SECRET_KEY}"
+    volumes: ["./config/minio-policy.json:/tmp/policy.json:ro"]
+    entrypoint: /bin/sh
+    command:
+      - -ec
+      - |
+        n=0
+        until mc alias set local http://minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD" >/dev/null 2>&1; do
+          n=$$((n+1)); [ "$$n" -lt 60 ] || exit 1; sleep 2
+        done
+        mc mb --ignore-existing local/rutanova-raw
+        mc admin policy create local rutanova-ingest /tmp/policy.json
+        mc admin user add local "$$MINIO_ACCESS_KEY" "$$MINIO_SECRET_KEY"
+        mc admin policy attach local rutanova-ingest --user "$$MINIO_ACCESS_KEY"
+        mc version enable local/rutanova-raw
+
+  orders-api:
+    image: python:3.11.11-slim
+    command: python /app/server.py
+    volumes: ["./api:/app:ro"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health',timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  airflow-init:
+    <<: *airflow
+    depends_on:
+      postgres: {condition: service_healthy}
+      minio-init: {condition: service_completed_successfully}
+      orders-api: {condition: service_healthy}
+    command: ["bash", "-ec", "airflow db migrate && python /opt/airflow/scripts/bootstrap.py"]
+    restart: "no"
+
+  airflow-webserver:
+    <<: *airflow
+    command: webserver
+    depends_on:
+      airflow-init: {condition: service_completed_successfully}
+    ports: ["127.0.0.1:8081:8080"]
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    restart: unless-stopped
+
+  airflow-scheduler:
+    <<: *airflow
+    command: scheduler
+    depends_on:
+      airflow-init: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  minio-data:
+  airflow-logs:
+  dbt-target:
+  dbt-logs:

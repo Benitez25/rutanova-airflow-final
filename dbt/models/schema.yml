@@ -1,0 +1,45 @@
+version: 2
+models:
+  - name: stg_orders
+    description: Normalized orders, one row per order.
+    columns:
+      - name: order_id
+        tests: [unique, not_null]
+      - name: order_date
+        tests: [not_null]
+      - name: city
+        tests: [not_null]
+      - name: status
+        tests:
+          - accepted_values:
+              values: [delivered, cancelled]
+  - name: stg_delivery_costs
+    description: Carrier cost for each delivered order.
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+      - name: delivery_cost
+        tests: [not_null]
+  - name: int_order_profitability
+    description: Delivered orders and contribution margin after carrier costs.
+    columns:
+      - name: order_id
+        tests: [unique, not_null]
+      - name: delivery_cost
+        tests: [not_null]
+      - name: contribution_margin
+        tests: [not_null]
+  - name: mart_city_profitability
+    description: Daily profitability per city; percentage uses weighted revenue.
+    columns:
+      - name: order_date
+        tests: [not_null]
+      - name: city
+        tests: [not_null]
+      - name: delivered_orders
+        tests: [not_null]

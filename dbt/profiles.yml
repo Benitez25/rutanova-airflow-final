@@ -1,0 +1,29 @@
+rutanova:
+  target: "{{ env_var('DBT_SF_TARGET', 'keypair') }}"
+  outputs:
+    keypair:
+      type: snowflake
+      account: "{{ env_var('DBT_SF_ACCOUNT') }}"
+      user: "{{ env_var('DBT_SF_USER') }}"
+      role: "{{ env_var('DBT_SF_ROLE') }}"
+      database: "{{ env_var('DBT_SF_DATABASE') }}"
+      warehouse: "{{ env_var('DBT_SF_WAREHOUSE') }}"
+      schema: ANALYTICS
+      threads: 2
+      client_session_keep_alive: false
+      connect_retries: 2
+      query_tag: rutanova_dbt
+      private_key_path: "{{ env_var('DBT_SF_KEY_PATH', '') }}"
+    password:
+      type: snowflake
+      account: "{{ env_var('DBT_SF_ACCOUNT') }}"
+      user: "{{ env_var('DBT_SF_USER') }}"
+      role: "{{ env_var('DBT_SF_ROLE') }}"
+      database: "{{ env_var('DBT_SF_DATABASE') }}"
+      warehouse: "{{ env_var('DBT_SF_WAREHOUSE') }}"
+      schema: ANALYTICS
+      threads: 2
+      client_session_keep_alive: false
+      connect_retries: 2
+      query_tag: rutanova_dbt
+      password: "{{ env_var('DBT_ENV_SECRET_SF_PASSWORD', '') }}"
