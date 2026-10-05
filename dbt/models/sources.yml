@@ -1,0 +1,10 @@
+version: 2
+sources:
+  - name: raw
+    database: "{{ env_var('DBT_SF_DATABASE') }}"
+    schema: RAW
+    tables:
+      - name: orders
+        description: Complete snapshot from the simulated orders API.
+      - name: delivery_costs
+        description: Complete snapshot from the carrier CSV, archived in MinIO.

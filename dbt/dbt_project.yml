@@ -1,0 +1,15 @@
+name: rutanova
+version: '1.0.0'
+config-version: 2
+profile: rutanova
+model-paths: [models]
+test-paths: [tests]
+clean-targets: [target, dbt_packages]
+models:
+  rutanova:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
