@@ -1,0 +1,29 @@
+name: CI
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  business-tests:
+    name: business-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pytest==8.3.5
+      - run: python -m pytest tests/test_business.py -q
+  docker-dag-tests:
+    name: docker-dag-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t rutanova-ci .
+      - run: docker run --rm --entrypoint python rutanova-ci -m pytest tests -q
+      - name: Validate dbt project offline
+        run: |
+          docker run --rm --entrypoint /opt/airflow/dbt-venv/bin/dbt             -e DBT_SF_ACCOUNT=ci-account -e DBT_SF_USER=ci-user             -e DBT_SF_ROLE=ci-role -e DBT_SF_DATABASE=RUTANOVA             -e DBT_SF_WAREHOUSE=ci-wh -e DBT_SF_TARGET=password             -e DBT_ENV_SECRET_SF_PASSWORD=ci-placeholder             rutanova-ci parse --project-dir /opt/airflow/dbt --profiles-dir /opt/airflow/dbt

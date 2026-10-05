@@ -1,0 +1,146 @@
+[
+  {
+    "order_id": "RN-001",
+    "order_date": "2026-10-01",
+    "city": "Lima",
+    "revenue": "110",
+    "product_cost": "67",
+    "status": "delivered"
+  },
+  {
+    "order_id": "RN-002",
+    "order_date": "2026-10-01",
+    "city": "Arequipa",
+    "revenue": "120",
+    "product_cost": "74",
+    "status": "delivered"
+  },
+  {
+    "order_id": "RN-003",
+    "order_date": "2026-10-01",
+    "city": "Trujillo",
+    "revenue": "130",
+    "product_cost": "81",
+    "status": "delivered"
+  },
+  {
+    "order_id": "RN-004",
+    "order_date": "2026-10-01",
+    "city": "Lima",
+    "revenue": "140",
+    "product_cost": "88",
+    "status": "delivered"
+  },
+  {
+    "order_id": "RN-005",
+    "order_date": "2026-10-01",
+    "city": "Arequipa",
+    "revenue": "150",
+    "product_cost": "95",
+    "status": "delivered"
+  },
+  {
+    "order_id": "RN-006",
+    "order_date": "2026-10-01",
+    "city": "Trujillo",
+    "revenue": "160",
+    "product_cost": "102",
+    "status": "cancelled"
+  },
+  {
+    "order_id": "RN-007",
+    "order_date": "2026-10-02",
+    "city": "Lima",
+    "revenue": "170",
+    "product_cost": "109",
+    "status": "delivered"
+  },
+  {
+    "order_id": "RN-008",
+    "order_date": "2026-10-02",
+    "city": "Arequipa",
+    "revenue": "180",
+    "product_cost": "116",
+    "status": "delivered"
+  },
+  {
+    "order_id": "RN-009",
+    "order_date": "2026-10-02",
+    "city": "Trujillo",
+    "revenue": "190",
+    "product_cost": "123",
+    "status": "delivered"
+  },
+  {
+    "order_id": "RN-010",
+    "order_date": "2026-10-02",
+    "city": "Lima",
+    "revenue": "200",
+    "product_cost": "130",
+    "status": "delivered"
+  },
+  {
+    "order_id": "RN-011",
+    "order_date": "2026-10-02",
+    "city": "Arequipa",
+    "revenue": "210",
+    "product_cost": "137",
+    "status": "delivered"
+  },
+  {
+    "order_id": "RN-012",
+    "order_date": "2026-10-02",
+    "city": "Trujillo",
+    "revenue": "220",
+    "product_cost": "144",
+    "status": "cancelled"
+  },
+  {
+    "order_id": "RN-013",
+    "order_date": "2026-10-03",
+    "city": "Lima",
+    "revenue": "230",
+    "product_cost": "151",
+    "status": "delivered"
+  },
+  {
+    "order_id": "RN-014",
+    "order_date": "2026-10-03",
+    "city": "Arequipa",
+    "revenue": "240",
+    "product_cost": "158",
+    "status": "delivered"
+  },
+  {
+    "order_id": "RN-015",
+    "order_date": "2026-10-03",
+    "city": "Trujillo",
+    "revenue": "250",
+    "product_cost": "165",
+    "status": "delivered"
+  },
+  {
+    "order_id": "RN-016",
+    "order_date": "2026-10-03",
+    "city": "Lima",
+    "revenue": "260",
+    "product_cost": "172",
+    "status": "delivered"
+  },
+  {
+    "order_id": "RN-017",
+    "order_date": "2026-10-03",
+    "city": "Arequipa",
+    "revenue": "270",
+    "product_cost": "179",
+    "status": "delivered"
+  },
+  {
+    "order_id": "RN-018",
+    "order_date": "2026-10-03",
+    "city": "Trujillo",
+    "revenue": "280",
+    "product_cost": "186",
+    "status": "cancelled"
+  }
+]

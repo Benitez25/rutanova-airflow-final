@@ -1,0 +1,5 @@
+# Airflow stays on the version of the base image. dbt lives in a separate venv.
+boto3==1.37.10
+requests==2.32.3
+snowflake-connector-python==3.14.0
+pytest==8.3.5
